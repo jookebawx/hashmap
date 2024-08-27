@@ -15,6 +15,9 @@ contract NFTregistry{
         require(contractAddress != address(0), "Invalid contract address");
         require(nfts[filehash].contractaddress == address(0), "ID already used");
         require(isContract(contractAddress), "Address is not a deployed contract");
+        bytes memory filehashBytes = bytes(filehash);
+        uint length = filehashBytes.length;
+        require(length >= 44 && length <= 46, "Invalid filehash length");
         nfts[filehash] = NFTInfo(chain,contractAddress,tokenid);
         emit NFTRegistered(filehash, chain ,contractAddress, tokenid);
     }
