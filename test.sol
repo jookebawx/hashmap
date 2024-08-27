@@ -1,28 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
+import "base58-solidity/contracts/Base58.sol";
 contract NFTregistry{
     struct NFTInfo{
-        string chainid;
+        uint256 chainid;
         address contractaddress;
-        int tokenid;
+        uint256 tokenid;
     }
 
     mapping(string => NFTInfo) public nfts;
-    event NFTRegistered(string indexed filehash, string chainid, address indexed contractAddress, int tokenid);
+    event NFTRegistered(string indexed filehash, uint256 chainid, address indexed contractAddress, uint256 tokenid);
     
-    function registerNFT(string memory filehash,  string memory chain, address contractAddress, int tokenid) public {
+    function registerNFT(string memory filehash,  uint256 chain, address contractAddress, uint256 tokenid) public {
         require(contractAddress != address(0), "Invalid contract address");
         require(nfts[filehash].contractaddress == address(0), "ID already used");
-        require(isContract(contractAddress), "Address is not a deployed contract");
-        bytes memory filehashBytes = bytes(filehash);
-        uint length = filehashBytes.length;
-        require(length >= 44 && length <= 46, "Invalid filehash length");
+        bytes memory decodedBytes = Base58.decodeFromString(filehash);
+        require(decodedBytes.length == 32, "File Hash is invalid");
         nfts[filehash] = NFTInfo(chain,contractAddress,tokenid);
         emit NFTRegistered(filehash, chain ,contractAddress, tokenid);
     }
 
-    function getNFTInfo(string memory filehash) public view returns (string memory, address, int) {
+    function getNFTInfo(string memory filehash) public view returns (uint256, address, uint256) {
         NFTInfo memory info = nfts[filehash];
         require(info.contractaddress != address(0), "Contract not found");
         return (info.chainid, info.contractaddress, info.tokenid);
@@ -32,13 +30,5 @@ contract NFTregistry{
         return nfts[filehash].contractaddress != address(0);
     }
 
-    function isContract(address _addr) public view returns (bool) {
-        uint256 size;
-        // Inline assembly to check the size of the code at the address
-        assembly {
-            size := extcodesize(_addr)
-        }
-        return size > 0;
-    }       
 }
 

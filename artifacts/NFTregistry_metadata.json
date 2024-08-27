@@ -16,9 +16,9 @@
 					},
 					{
 						"indexed": false,
-						"internalType": "string",
+						"internalType": "uint256",
 						"name": "chainid",
-						"type": "string"
+						"type": "uint256"
 					},
 					{
 						"indexed": true,
@@ -28,9 +28,9 @@
 					},
 					{
 						"indexed": false,
-						"internalType": "int256",
+						"internalType": "uint256",
 						"name": "tokenid",
-						"type": "int256"
+						"type": "uint256"
 					}
 				],
 				"name": "NFTRegistered",
@@ -47,9 +47,9 @@
 				"name": "getNFTInfo",
 				"outputs": [
 					{
-						"internalType": "string",
+						"internalType": "uint256",
 						"name": "",
-						"type": "string"
+						"type": "uint256"
 					},
 					{
 						"internalType": "address",
@@ -57,28 +57,9 @@
 						"type": "address"
 					},
 					{
-						"internalType": "int256",
+						"internalType": "uint256",
 						"name": "",
-						"type": "int256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_addr",
-						"type": "address"
-					}
-				],
-				"name": "isContract",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -114,9 +95,9 @@
 				"name": "nfts",
 				"outputs": [
 					{
-						"internalType": "string",
+						"internalType": "uint256",
 						"name": "chainid",
-						"type": "string"
+						"type": "uint256"
 					},
 					{
 						"internalType": "address",
@@ -124,9 +105,9 @@
 						"type": "address"
 					},
 					{
-						"internalType": "int256",
+						"internalType": "uint256",
 						"name": "tokenid",
-						"type": "int256"
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -140,9 +121,9 @@
 						"type": "string"
 					},
 					{
-						"internalType": "string",
+						"internalType": "uint256",
 						"name": "chain",
-						"type": "string"
+						"type": "uint256"
 					},
 					{
 						"internalType": "address",
@@ -150,9 +131,9 @@
 						"type": "address"
 					},
 					{
-						"internalType": "int256",
+						"internalType": "uint256",
 						"name": "tokenid",
-						"type": "int256"
+						"type": "uint256"
 					}
 				],
 				"name": "registerNFT",
@@ -188,12 +169,20 @@
 		"remappings": []
 	},
 	"sources": {
-		"test.sol": {
-			"keccak256": "0x0e58bf1c95990ed2ca1d09c3f33bb4762acbc8e12418f6ee59c945bb954f5438",
+		"base58-solidity/contracts/Base58.sol": {
+			"keccak256": "0x570c5385737f918abffacd0941b80d45c06e0ab779ebfb4152c1767b2321d3a3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://104f8192a1d941cf8c5ac1789d090fa8c4d43a43af864e3eb104afc7ca237798",
-				"dweb:/ipfs/QmUocUgUKSazGgGJBviL9iMkqGy8UP11azwrDvwiiKrbKt"
+				"bzz-raw://a6819aacdb9822647209b30e49b4be742772b0c2278c2c97aa53d7ec9657fe01",
+				"dweb:/ipfs/QmTUxys4NoyzV5YFsqct6vaQgtmEYvQvN4JtZA5vcjjhr2"
+			]
+		},
+		"test.sol": {
+			"keccak256": "0x7d9fd06acefd86e865690fd63cb2380c945a4f0e8e39c2a53bc87b7e0014773d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4f39658a5b39b3e93c2d8ed94654f67aa4943483189032d2cb8b4b2dfbbc7be6",
+				"dweb:/ipfs/QmTHj7zZq7EKmeBiC4CAARsjiWVzebAYPG1va7KC8V8ezq"
 			]
 		}
 	},
