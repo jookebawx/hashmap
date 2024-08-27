@@ -68,6 +68,25 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_addr",
+						"type": "address"
+					}
+				],
+				"name": "isContract",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "string",
 						"name": "filehash",
 						"type": "string"
@@ -170,11 +189,11 @@
 	},
 	"sources": {
 		"test.sol": {
-			"keccak256": "0x639e440d5625a028fccdbce5e8a7949151847593d787d368dc99d09c1caa9389",
+			"keccak256": "0x8a1c07d8b340395988839246c73c33211c5d9e6a3f5419ab467e8426544be8ad",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e6c16c7c49b9e5fd6a538ed5b3989e2f0be09156f8779229decc8999fdcb293d",
-				"dweb:/ipfs/QmW3eZMksJeYHmynXLhHCuuPrvfRUCtSxefKfYZ9ovZTyB"
+				"bzz-raw://2528cdac6e28537559daf69edfd4deddee1532764cf451ae2cfb4de2083394bd",
+				"dweb:/ipfs/QmVa2iQ8L4EP1mqb9xcPmgj4Bsk4R2fv4hWtTwLRpw5E8t"
 			]
 		}
 	},

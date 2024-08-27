@@ -14,6 +14,7 @@ contract NFTregistry{
     function registerNFT(string memory filehash,  string memory chain, address contractAddress, int tokenid) public {
         require(contractAddress != address(0), "Invalid contract address");
         require(nfts[filehash].contractaddress == address(0), "ID already used");
+        require(isContract(contractAddress), "Address is not a deployed contract");
         nfts[filehash] = NFTInfo(chain,contractAddress,tokenid);
         emit NFTRegistered(filehash, chain ,contractAddress, tokenid);
     }
@@ -26,6 +27,15 @@ contract NFTregistry{
 
     function isContractRegistered(string memory filehash) public view returns (bool) {
         return nfts[filehash].contractaddress != address(0);
+    }
+
+    function isContract(address _addr) public view returns (bool) {
+        uint256 size;
+        // Inline assembly to check the size of the code at the address
+        assembly {
+            size := extcodesize(_addr)
+        }
+        return size > 0;
     }       
 }
 
