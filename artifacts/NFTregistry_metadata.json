@@ -10,9 +10,9 @@
 				"inputs": [
 					{
 						"indexed": true,
-						"internalType": "string",
+						"internalType": "bytes32",
 						"name": "filehash",
-						"type": "string"
+						"type": "bytes32"
 					},
 					{
 						"indexed": false,
@@ -39,9 +39,9 @@
 			{
 				"inputs": [
 					{
-						"internalType": "string",
+						"internalType": "bytes32",
 						"name": "filehash",
-						"type": "string"
+						"type": "bytes32"
 					}
 				],
 				"name": "getNFTInfo",
@@ -68,9 +68,9 @@
 			{
 				"inputs": [
 					{
-						"internalType": "string",
+						"internalType": "bytes32",
 						"name": "filehash",
-						"type": "string"
+						"type": "bytes32"
 					}
 				],
 				"name": "isContractRegistered",
@@ -87,38 +87,9 @@
 			{
 				"inputs": [
 					{
-						"internalType": "string",
-						"name": "",
-						"type": "string"
-					}
-				],
-				"name": "nfts",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "chainid",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "contractaddress",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "tokenid",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "string",
+						"internalType": "bytes32",
 						"name": "filehash",
-						"type": "string"
+						"type": "bytes32"
 					},
 					{
 						"internalType": "uint256",
@@ -169,20 +140,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"base58-solidity/contracts/Base58.sol": {
-			"keccak256": "0x570c5385737f918abffacd0941b80d45c06e0ab779ebfb4152c1767b2321d3a3",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://a6819aacdb9822647209b30e49b4be742772b0c2278c2c97aa53d7ec9657fe01",
-				"dweb:/ipfs/QmTUxys4NoyzV5YFsqct6vaQgtmEYvQvN4JtZA5vcjjhr2"
-			]
-		},
 		"test.sol": {
-			"keccak256": "0x7d9fd06acefd86e865690fd63cb2380c945a4f0e8e39c2a53bc87b7e0014773d",
+			"keccak256": "0x6ecdcf59da851d75ec18f489f85b0327a472dfda90b0443d3f2949befd67dac5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4f39658a5b39b3e93c2d8ed94654f67aa4943483189032d2cb8b4b2dfbbc7be6",
-				"dweb:/ipfs/QmTHj7zZq7EKmeBiC4CAARsjiWVzebAYPG1va7KC8V8ezq"
+				"bzz-raw://afc3edb2a07c9923cd3cac6b66b3eb366a0e9698729dd89a59f33edd0552baad",
+				"dweb:/ipfs/QmWi8xnNFJS77tdrVbqsWHHfQd63VgBw2oG57YNGCruKSR"
 			]
 		}
 	},
