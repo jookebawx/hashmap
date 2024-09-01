@@ -1,12 +1,5 @@
 
 
-// document.getElementById('openseaForm').addEventListener('submit', function(event) {
-//     event.preventDefault(); // Prevent the form from submitting the traditional way
-//     const chainID = document.getElementById('chainID').value;
-//     const contractAddress = document.getElementById('contractAddress').value;
-//     const tokenId = document.getElementById('tokenId').value;
-//     checkOpenSeaListing(chainID, contractAddress, tokenId);
-// });
 
 async function populateDropdown() {
     try {
@@ -150,30 +143,3 @@ async function displayChainResult(metadata) {
     }
 }
 
-async function checkOpenSeaListing(chainId, contractAddress, tokenId) {
-    const url = `https://api.opensea.io/api/v2/chain/${chainID}/contract/${contractAddress}/nfts/${tokenId}`;
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        const data = await response.json();
-
-        displayOpenSeaResult(data);
-    } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        document.getElementById('openseaResult').innerHTML = 'Error fetching data from OpenSea';
-    }
-}
-
-function displayOpenSeaResult(data) {
-    const resultDiv = document.getElementById('openseaResult');
-    if (data.sell_orders && data.sell_orders.length > 0) {
-        resultDiv.innerHTML = `<h2>Token is listed on OpenSea</h2>
-                               <p>Listing Price: ${data.sell_orders[0].current_price}</p>
-                               <p>Listing URL: <a href="https://opensea.io/assets/${data.asset_contract.address}/${data.token_id}" target="_blank">View on OpenSea</a></p>`;
-    } else {
-        resultDiv.innerHTML = `<h2>Token is not listed on OpenSea</h2>`;
-    }
-}
