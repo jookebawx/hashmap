@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Chain Info and Check OpenSea Listing</title>
+</head>
+<body>
+
+    <button onclick="connectMetaMask()">Connect MetaMask</button>
+
+    <div id="walletAddress" style="display:none;">
+        <p><strong>Connected Wallet Address:</strong> <span id="address"></span></p>
+    </div>
+
+    <div id="upload" style="display:none;">
+        <h1> Upload Document </h1>
+        <form id="uploadForm">
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <button type="button" onclick ="verify()">Verify</button>
+        </form>
+    </div>
+
+    <div id="chainResult"></div>
+    <div id="openseaResult"></div>
+    <div id="check" style="display:none;">
+        <h1>Register your NFT</h1>
+        <form id="RegisterNFT">
+            <label for="chainID">Blockchain Network:</label>
+            <select id="chainDropdown"></select>
+            <br>
+            <label for="contractAddress">Contract Address:</label>
+            <input type="text" id="contractAddress" name="contractAddress" required>
+            <br>
+            <label for="tokenId">Token ID:</label>
+            <input type="number" id="tokenId" name="tokenId" required>
+            <br>
+            <button type="button" onclick="registernft()">Register</button>
+        </form>
+        </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
