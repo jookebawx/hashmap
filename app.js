@@ -3,8 +3,7 @@
 
 async function populateDropdown() {
     try {
-        const response = await fetch('https://chainid.network/chains.json');
-        const data = await response.json();
+        const data = await fetch('selected_chains.json);
 
         
         const dropdown = document.getElementById('chainDropdown');
@@ -108,8 +107,7 @@ async function registernft(){
 }
 async function getChainInfo(chainId) {
     try {
-        const response = await fetch('https://chainid.network/chains.json');
-        const data = await response.json();
+        const data = await fetch('selected_chains.json');
 
         // Find the chain with the specified chainId
         const chain = data.find(chain => chain.chainId == chainId); // Use == to compare string and number
