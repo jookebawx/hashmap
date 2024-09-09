@@ -22,15 +22,15 @@ async function populateDropdown() {
 }
 
 populateDropdown();
-const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
 
-async function fetchABI() {
-    const response = await fetch('abi.json');
+
+async function fetchABI(abipath) {
+    const response = await fetch(abipath);
     return response.json();
 }
 
-async function loadContract(){
-    const abi = await fetchABI();
+async function loadContract(abipath,contractaddress){
+    const abi = await fetchABI(abipath);
     return await new window.web3.eth.Contract(abi,contractaddress);
 }
 async function connectMetaMask() {
@@ -62,8 +62,11 @@ async function getCurrentAccount() {
     }
 
 
-
 async function verify() {
+
+    const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
+    const abipath = 'abi.json'
+    await checkAndSwitchNetwork(11155111)
     const fileInput = document.getElementById('fileToUpload');
     const file = fileInput.files[0];
     if (!file) {
@@ -73,7 +76,7 @@ async function verify() {
     const fileBuffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    window.contract = await loadContract();
+    window.contract = await loadContract(abipath,contractaddress);
     account = await getCurrentAccount();
     try{
         const metadata = await window.contract.methods.getNFTInfo(hashArray).call();
@@ -128,18 +131,136 @@ async function getChainInfo(chainId) {
 }
 
 async function displayChainResult(metadata) {
-    const chaininfo = await getChainInfo(metadata["0"])
+    const chaininfo = await getChainInfo(metadata["0"]);
     const resultDiv = document.getElementById('chainResult');
+    
     if (chaininfo.name) {
         resultDiv.innerHTML = `<h2>Chain Name: ${chaininfo.name}</h2>
                                <h2>Chain ID: ${metadata["0"]}</h2>
                                <h2>Contract Address: ${metadata["1"]}</h2>
                                <h3>Explorers:</h3>
-                               <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${metadata["1"]}" target="_blank">${metadata["1"]}(${explorer.name})</a></li>`).join('')}</ul>
-                               <h2>Token ID: <a href ="https://opensea.io/assets/${chaininfo.name}/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>`
-;
+                               <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${metadata["1"]}" target="_blank">${metadata["1"]} (${explorer.name})</a></li>`).join('')}</ul>
+                               <h2>Token ID: <a href ="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>
+                               <h2 id="ownerOf"></h2>
+                              <button type="button" onclick="fetchOwnerWithNetworkCheck('${metadata["2"]}', '${metadata["1"]}', ${metadata["0"]})">Get Owner Address</button>`;
     } else {
         resultDiv.innerHTML = `<h2>Chain not found</h2>`;
+    }
+}
+
+
+async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChainId) {
+    await checkAndSwitchNetwork(requiredChainId); // Ensure we're on the correct network
+    const chaininfo = await getChainInfo(requiredChainId);
+    const resultDiv = document.getElementById('ownerOf');
+    const ownerabi = 'getMetadataABI.json'; // Path to ABI file containing both ownerOf and tokenURI functions
+    const contract = await loadContract(ownerabi, contractAddress);
+
+    try {
+        // Fetch owner
+        const owner = await contract.methods.ownerOf(tokenId).call();
+
+        // Fetch token URI
+        const tokenURI = await contract.methods.tokenURI(tokenId).call();
+
+        // Fetch metadata from token URI
+        if (tokenURI.startsWith('ipfs://')) {
+            metadataUrl = `https://ipfs.io/ipfs/${tokenURI.substring(7)}`;
+        }else{
+            metadataUrl = tokenURI
+        }
+        
+        // Display owner and metadata
+        resultDiv.innerHTML = `Owner Address: ${owner}
+                               <h3>Explorers:</h3>
+                               <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${owner}" target="_blank">${owner}(${explorer.name})</a></li>`).join('')}</ul>
+                               <h3>Metadata:<a href = "${metadataUrl}">${tokenURI}</a></h3>`
+                        
+    } catch (error) {
+        console.error(`Error fetching owner or metadata: ${error.message}`);
+        resultDiv.innerHTML = `Error fetching owner or metadata: ${error.message}`;
+    }
+}
+
+
+async function checkAndSwitchNetwork(requiredChainId) {
+    if (window.ethereum) {
+        try {
+            const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+            
+            if (parseInt(currentChainId, 16) !== requiredChainId) {
+                // Switch to the required network
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x' + requiredChainId.toString(16) }], // Convert chainId to hex
+                    });
+                    console.log(`Switched to chain ID ${requiredChainId}`);
+                } catch (switchError) {
+                    console.error(`Error switching network: ${switchError.message}`);
+                    // If the network is not added to MetaMask, request to add it
+                    if (switchError.code === 4902) {
+                        const chainInfo = await getChainInfo(requiredChainId);
+                        if (chainInfo.name) {
+                            try {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [{
+                                        chainId: '0x' + requiredChainId.toString(16),
+                                        chainName: chainInfo.name,
+                                        rpcUrls: [chainInfo.rpc],
+                                        nativeCurrency: {
+                                            name: chainInfo.nativeCurrency.name,
+                                            symbol: chainInfo.nativeCurrency.symbol,
+                                            decimals: chainInfo.nativeCurrency.decimals,
+                                        },
+                                    }],
+                                });
+                                console.log(`Added and switched to chain ID ${requiredChainId}`);
+                            } catch (addError) {
+                                console.error(`Error adding network: ${addError.message}`);
+                            }
+                        }
+                    }
+                }
+            } else {
+                console.log(`Already on chain ID ${requiredChainId}`);
+            }
+        } catch (error) {
+            console.error(`Error checking current network: ${error.message}`);
+        }
+    } else {
+        console.error('MetaMask is not installed');
+    }
+}
+
+async function addNetwork(chainId) {
+    try {
+        const chainInfo = await getChainInfo(chainId);
+
+        if (!chainInfo.name) {
+            console.error('Chain information is not available.');
+            return;
+        }
+
+        await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+                chainId: '0x' + chainId.toString(16),
+                chainName: chainInfo.name,
+                rpcUrls: [chainInfo.rpc],
+                nativeCurrency: {
+                    name: chainInfo.nativeCurrency.name,
+                    symbol: chainInfo.nativeCurrency.symbol,
+                    decimals: chainInfo.nativeCurrency.decimals,
+                },
+                blockExplorerUrls: chainInfo.explorers.map(explorer => explorer.url),
+            }],
+        });
+
+        console.log(`Network ${chainInfo.name} added successfully`);
+    } catch (error) {
+        console.error(`Error adding network: ${error.message}`);
     }
 }
 
