@@ -1,6 +1,7 @@
-# Hashmap NFT Registry Application
+# Hashmap NFT Registry Application v 1.5
 
 This project includes a smart contract and a web application for managing NFTs. The smart contract (`test.sol`) handles the registration and retrieval of NFT information, while the web application (`test.html` and `app.js`) provides an interface for interacting with the contract and managing NFTs. The ABI file (`abi.json`) defines the contract's interface for interaction.
+v1.5 added Get Metadata functionality to view the selected NFT's current owner (if exist) and metadata.
 
 ## Overview
 
