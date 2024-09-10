@@ -167,14 +167,16 @@ async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChai
         if (tokenURI.startsWith('ipfs://')) {
             metadataUrl = `https://ipfs.io/ipfs/${tokenURI.substring(7)}`;
         }else{
-            metadataUrl = tokenURI
+            metadataUrl = tokenURI;
         }
-        
+        const data = await fetch(metadataUrl);
+        const response = data.json();   
+        console.log(response)
         // Display owner and metadata
         resultDiv.innerHTML = `Owner Address: ${owner}
                                <h3>Explorers:</h3>
                                <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${owner}" target="_blank">${owner}(${explorer.name})</a></li>`).join('')}</ul>
-                               <h3>Metadata:<a href = "${metadataUrl}">${tokenURI}</a></h3>`
+                               <h3>Metadata:<a href = "${metadataUrl}">${tokenURI}</a></h3>`;
                         
     } catch (error) {
         console.error(`Error fetching owner or metadata: ${error.message}`);
