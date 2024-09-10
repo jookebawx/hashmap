@@ -296,7 +296,7 @@
         ]
     },
     {
-        "name": "Testnet",
+        "name": "Flow Testnet",
         "chain": "Flow",
         "rpc": [
             "https://testnet.evm.nodes.onflow.org"
@@ -323,7 +323,7 @@
         ]
     },
     {
-        "name": "Mainnet",
+        "name": "Flow Mainnet",
         "chain": "Flow",
         "rpc": [
             "https://mainnet.evm.nodes.onflow.org"

@@ -3,9 +3,8 @@
 
 async function populateDropdown() {
     try {
-        const data = await fetch('selected_chains.json);
-
-        
+        const response = await fetch('selected_chains.json');
+        const data = await response.json()
         const dropdown = document.getElementById('chainDropdown');
         dropdown.innerHTML = ''; // Clear any existing options
         
@@ -107,8 +106,8 @@ async function registernft(){
 }
 async function getChainInfo(chainId) {
     try {
-        const data = await fetch('selected_chains.json');
-
+        const response = await fetch('selected_chains.json');
+        const data = await response.json()
         // Find the chain with the specified chainId
         const chain = data.find(chain => chain.chainId == chainId); // Use == to compare string and number
 
@@ -134,7 +133,7 @@ async function displayChainResult(metadata) {
                                <h2>Contract Address: ${metadata["1"]}</h2>
                                <h3>Explorers:</h3>
                                <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${metadata["1"]}" target="_blank">${metadata["1"]}(${explorer.name})</a></li>`).join('')}</ul>
-                               <h2>Token ID: <a href ="https://opensea.io/assets/${chaininfo.name}/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>`
+                               <h2>Token ID: <a href ="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>`
 ;
     } else {
         resultDiv.innerHTML = `<h2>Chain not found</h2>`;
