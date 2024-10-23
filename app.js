@@ -89,6 +89,8 @@ async function verify() {
     }
 }
 async function registernft(){
+    const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
+    const abipath = 'abi.json'
     const fileInput = document.getElementById('fileToUpload');
     const file = fileInput.files[0];
     if (!file) {
@@ -99,7 +101,7 @@ async function registernft(){
     const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     
-    window.contract = await loadContract();
+    window.contract = await loadContract(abipath,contractaddress);
     account = await getCurrentAccount();
     const selected_chain_id = document.getElementById('chainDropdown').value
     const register_CA = document.getElementById('contractAddress').value
