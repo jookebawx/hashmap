@@ -33,7 +33,7 @@ The `test.sol` contract allows for registering NFTs with the following functions
 
 ### 2. Web Application
 
-**HTML File**: `test.html`
+**HTML File**: `index.html`
 
 This file provides the user interface for interacting with the smart contract. It includes:
 - A button to connect MetaMask.
@@ -67,7 +67,7 @@ This JSON file provides the ABI (Application Binary Interface) for the smart con
 1. **Clone the Repository**:
 
     ```bash
-    git clone https://github.com/your-repo/hashmap.git
+    git clone https://github.com/jookebawx/hashmap.git
     cd hashmap
     ```
 
