@@ -23,38 +23,6 @@ async function verify() {
         alert('Please select a file to upload.');
         return;
     }
-
-    // Display file preview
-    const filePreview = document.getElementById('filePreview');
-    filePreview.innerHTML = ''; // Clear previous preview
-    if (file.type.startsWith('image/')) {
-        // Preview for images
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        img.alt = "File Preview";
-        img.classList.add('max-w-full', 'h-auto', 'rounded-lg', 'shadow-md');
-        filePreview.appendChild(img);
-    } else if (file.type === 'application/pdf') {
-        // Preview for PDFs
-        const embed = document.createElement('embed');
-        embed.src = URL.createObjectURL(file);
-        embed.type = 'application/pdf';
-        embed.classList.add('w-full', 'h-96', 'rounded-lg', 'shadow-md');
-        filePreview.appendChild(embed);
-    } else {
-        // Preview for other file types (e.g., text files)
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const text = event.target.result;
-            const pre = document.createElement('pre');
-            pre.textContent = text;
-            pre.classList.add('bg-gray-800', 'p-4', 'rounded-lg', 'text-white', 'text-left', 'overflow-auto');
-            filePreview.appendChild(pre);
-        };
-        reader.readAsText(file);
-    }
-
-    // Continue with file verification
     const fileBuffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -62,7 +30,7 @@ async function verify() {
     const account = await getCurrentAccount();
     try {
         const metadata = await window.contract.methods.getNFTInfo(hashArray).call();
-        displayChainResult(metadata); // Use the imported function
+        displayChainResult(metadata);
     } catch (error) {
         alert(error.message);
         document.getElementById('chainResult').innerHTML = '';
