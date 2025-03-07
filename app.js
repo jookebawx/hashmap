@@ -29,4 +29,3 @@ window.connectMetaMask = connectMetaMask;
 window.verify = verify;
 window.registernft = registernft;
 window.fetchOwnerWithNetworkCheck = fetchOwnerWithNetworkCheck; // Expose this function
-window.displayChainResult = displayChainResult;

@@ -1,7 +1,7 @@
 // contract.js
 import { checkAndSwitchNetwork } from './network.js';
 import { getCurrentAccount } from './wallet.js';
-import { renderOwnerInfo, renderError } from './render.js';
+import { renderOwnerInfo, renderError, displayChainResult } from './render.js';
 
 async function fetchABI(abipath) {
     const response = await fetch(abipath);
