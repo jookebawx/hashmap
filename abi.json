@@ -36,6 +36,34 @@
 				"internalType": "bytes32",
 				"name": "filehash",
 				"type": "bytes32"
+			},
+			{
+				"internalType": "uint256",
+				"name": "chain",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "contractAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenid",
+				"type": "uint256"
+			}
+		],
+		"name": "registerNFT",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "filehash",
+				"type": "bytes32"
 			}
 		],
 		"name": "getNFTInfo",
@@ -76,34 +104,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "filehash",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256",
-				"name": "chain",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "contractAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenid",
-				"type": "uint256"
-			}
-		],
-		"name": "registerNFT",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]
