@@ -1,6 +1,7 @@
 // contract.js
 import { checkAndSwitchNetwork } from './network.js';
 import { getCurrentAccount } from './wallet.js';
+import { renderOwnerInfo, renderError } from './render.js';
 
 async function fetchABI(abipath) {
     const response = await fetch(abipath);
@@ -71,4 +72,49 @@ async function registernft() {
     }
 }
 
-export { fetchABI, loadContract, verify, registernft };
+async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChainId) {
+    await checkAndSwitchNetwork(requiredChainId); // Ensure we're on the correct network
+
+    const startTime = performance.now();
+    const resultDiv = document.getElementById('ownerOf');
+    const ownerabi = 'getMetadataABI.json'; // Path to ABI file containing both ownerOf and tokenURI functions
+    const contract = await loadContract(ownerabi, contractAddress);
+
+    try {
+        // Fetch owner and metadata
+        const [owner, tokenURI] = await Promise.all([
+            contract.methods.ownerOf(tokenId).call(),
+            contract.methods.tokenURI(tokenId).call()
+        ]);
+
+        // Get metadata URL
+        const metadataUrl = tokenURI.startsWith('ipfs://') 
+            ? `https://ipfs.io/ipfs/${tokenURI.substring(7)}` 
+            : tokenURI;
+
+        // Fetch metadata
+        const metadataResponse = await fetch(metadataUrl);
+        const metadata = await metadataResponse.json();
+
+        // Get chain info
+        const chaininfo = await getChainInfo(requiredChainId);
+
+        // Render result dynamically
+        resultDiv.innerHTML = renderOwnerInfo({
+            owner,
+            chaininfo,
+            metadataUrl,
+            tokenURI,
+            metadata
+        });
+
+    } catch (error) {
+        console.error(`Error fetching owner or metadata: ${error.message}`);
+        resultDiv.innerHTML = renderError({ errorMessage: error.message });
+    }
+
+    const endTime = performance.now();
+    console.log(`Execution time: ${endTime - startTime} ms`);
+}
+
+export { fetchABI, loadContract, verify, registernft, fetchOwnerWithNetworkCheck };

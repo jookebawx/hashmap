@@ -1,6 +1,6 @@
 // app.js
 import { connectMetaMask, getCurrentAccount } from './wallet.js';
-import { verify, registernft } from './contract.js';
+import { verify, registernft, fetchOwnerWithNetworkCheck } from './contract.js';
 import { getChainInfo, checkAndSwitchNetwork } from './network.js';
 import { displayChainResult } from './render.js';
 
@@ -28,4 +28,4 @@ populateDropdown();
 window.connectMetaMask = connectMetaMask;
 window.verify = verify;
 window.registernft = registernft;
-window.displayChainResult = displayChainResult;
+window.fetchOwnerWithNetworkCheck = fetchOwnerWithNetworkCheck; // Expose this function
