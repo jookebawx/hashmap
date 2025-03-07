@@ -1,6 +1,3 @@
-
-
-
 async function populateDropdown() {
     try {
         const response = await fetch('https://chainid.network/chains.json');
@@ -107,7 +104,7 @@ async function registernft(){
     
     window.contract = await loadContract(abipath,contractaddress);
     account = await getCurrentAccount();
-    const selected_chain_id = document.getElementById('chainDropdown').value
+    const selected_chain_id = document.getElementById('chainDropd').value
     const register_CA = document.getElementById('contractAddress').value
     const register_tokenid = document.getElementById('tokenId').value
     console.log(`File Hash (Base58): ${hashArray}\nChain ID: ${selected_chain_id} \nContract Address: ${register_CA}\ntoken ID: ${register_tokenid}`);
@@ -159,61 +156,143 @@ async function getChainInfo(chainId) {
     
 }
 
+function generateExplorerLinks(explorers, address) {
+    return explorers.map(explorer => `
+        <li>
+            <a href="${explorer.url}/address/${address}" target="_blank"
+               class="text-blue-500 hover:underline">
+                ${address} (${explorer.name})
+            </a>
+        </li>
+    `).join('');
+}
+
 async function displayChainResult(metadata) {
     const chaininfo = await getChainInfo(metadata["0"]);
     const resultDiv = document.getElementById('chainResult');
-    
-    if (chaininfo.name) {
-        resultDiv.innerHTML = `<h2>Chain Name: ${chaininfo.name}</h2>
-                               <h2>Chain ID: ${metadata["0"]}</h2>
-                               <h2>Contract Address: ${metadata["1"]}</h2>
-                               <h3>Explorers:</h3>
-                               <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${metadata["1"]}" target="_blank">${metadata["1"]}(${explorer.name})</a></li>`).join('')}</ul>
-                               <h2>Token ID: <a href ="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>`
-;
-    } else {
-        resultDiv.innerHTML = `<h2>Chain not found</h2>`;
+
+    if (!chaininfo.name) {
+        resultDiv.innerHTML = renderError("Chain not found");
+        return;
     }
+
+    resultDiv.innerHTML = `
+        <div class="bg-gray-800 p-6 rounded-lg shadow-md text-white text-center">
+            ${renderSection('Chain Name', chaininfo.name, 'blue-400')}
+            ${renderSection('Chain ID', metadata["0"], 'gray-300')}
+            ${renderSection('Contract', metadata["1"], 'yellow-300', metadata["1"])}
+            ${renderExplorers(chaininfo.explorers, metadata["1"])}
+            ${renderTokenID(chaininfo, metadata)}
+            ${renderOwnerButton(metadata)}
+        </div>
+    `;
 }
 
-
 async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChainId) {
-    
     await checkAndSwitchNetwork(requiredChainId); // Ensure we're on the correct network
+
     const startTime = performance.now();
-    const chaininfo = await getChainInfo(requiredChainId);
     const resultDiv = document.getElementById('ownerOf');
     const ownerabi = 'getMetadataABI.json'; // Path to ABI file containing both ownerOf and tokenURI functions
     const contract = await loadContract(ownerabi, contractAddress);
+
     try {
-        // Fetch owner
-        const owner = await contract.methods.ownerOf(tokenId).call();
+        // Fetch owner and metadata
+        const [owner, tokenURI] = await Promise.all([
+            contract.methods.ownerOf(tokenId).call(),
+            contract.methods.tokenURI(tokenId).call()
+        ]);
 
-        // Fetch token URI
-        const tokenURI = await contract.methods.tokenURI(tokenId).call();
+        // Get metadata URL
+        const metadataUrl = tokenURI.startsWith('ipfs://') 
+            ? `https://ipfs.io/ipfs/${tokenURI.substring(7)}` 
+            : tokenURI;
 
-        // Fetch metadata from token URI
-        if (tokenURI.startsWith('ipfs://')) {
-            metadataUrl = `https://ipfs.io/ipfs/${tokenURI.substring(7)}`;
-        }else{
-            metadataUrl = tokenURI;
-        }
-        const data = await fetch(metadataUrl);
-        const response = data.json();   
-        console.log(response)
-        // Display owner and metadata
-        resultDiv.innerHTML = `Owner Address: ${owner}
-                               <h3>Explorers:</h3>
-                               <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${owner}" target="_blank">${owner}(${explorer.name})</a></li>`).join('')}</ul>
-                               <h3>Metadata:<a href = "${metadataUrl}">${tokenURI}</a></h3>`;
-                        
+        // Fetch metadata
+        const metadataResponse = await fetch(metadataUrl);
+        const metadata = await metadataResponse.json();
+
+        // Get chain info
+        const chaininfo = await getChainInfo(requiredChainId);
+
+        // Render result dynamically
+        resultDiv.innerHTML = renderOwnerInfo({
+            owner,
+            chaininfo,
+            metadataUrl,
+            tokenURI,
+            metadata
+        });
+
     } catch (error) {
         console.error(`Error fetching owner or metadata: ${error.message}`);
-        resultDiv.innerHTML = `Error fetching owner or metadata: ${error.message}`;
+        resultDiv.innerHTML = renderError({ errorMessage: error.message });
     }
+
     const endTime = performance.now();
-    const executionTime = endTime - startTime;
-    console.log(`Execution time: ${executionTime} ms`);
+    console.log(`Execution time: ${endTime - startTime} ms`);
+}
+
+// Helper function to dynamically render the owner info
+function renderOwnerInfo({ owner, chaininfo, metadataUrl, tokenURI, metadata }) {
+    return `
+        <div class="max-w-lg mx-auto p-6 bg-gray-800 rounded-lg shadow-md mt-6 text-white">
+            ${renderSection('Owner Address', owner, 'blue-400')}
+            ${renderExplorers(chaininfo.explorers, owner)}
+            ${renderSection('Metadata', metadataUrl, 'green-400', tokenURI)}
+        </div>`;
+}
+
+// Helper function to render a general section (e.g., Owner, Metadata)
+function renderSection(title, content, colorClass, link = null) {
+    return `
+        <div class="mt-4">
+            <h3 class="text-xl font-bold text-${colorClass}">${title}:</h3>
+            ${link ? `<a href="${link}" class="text-indigo-400 hover:underline break-all">${content}</a>` 
+                  : `<p class="text-lg font-semibold text-gray-300 break-words">${content}</p>`}
+        </div>`;
+}
+
+// Helper function to render explorers
+function renderExplorers(explorers, owner) {
+    return `
+        <div class="mt-4">
+            <h3 class="text-xl font-bold text-yellow-400">Explorers:</h3>
+            <ul class="list-disc list-inside text-gray-200">
+                ${explorers.map(explorer => `
+                    <li>
+                        <a href="${explorer.url}/address/${owner}" target="_blank" class="text-blue-400 hover:underline">
+                            ${owner} (${explorer.name})
+                        </a>
+                    </li>
+                `).join('')}
+            </ul>
+        </div>`;
+}
+
+// Helper function to render tokenID
+function renderTokenID(chaininfo, metadata) {
+    return renderSection('Token ID', `<a href="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}" class="text-green-400 hover:underline">${metadata["2"]}</a>`, 'green-400');
+}
+
+// Helper function to render the button for fetching owner info
+function renderOwnerButton(metadata) {
+    return `
+        <h2 id="ownerOf" class="text-lg font-bold text-purple-400 mt-4"></h2>
+        <button onclick="fetchOwnerWithNetworkCheck('${metadata["2"]}', '${metadata["1"]}', ${metadata["0"]})"
+                class="mt-4 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">
+            Get Owner Address
+        </button>
+    `;
+}
+
+// Helper function to render error messages
+function renderError({ errorMessage }) {
+    return `
+        <div class="max-w-lg mx-auto p-6 bg-red-700 text-white rounded-lg shadow-md mt-6 text-center">
+            <h2 class="text-2xl font-bold">Error fetching owner or metadata</h2>
+            <p class="text-gray-300">${errorMessage}</p>
+        </div>`;
 }
 
 
