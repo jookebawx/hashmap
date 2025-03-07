@@ -44,7 +44,7 @@ function renderOwnerInfo({ owner, chaininfo, metadataUrl, tokenURI, metadata }) 
         <div class="max-w-lg mx-auto p-6 bg-gray-800 rounded-lg shadow-md mt-6 text-white">
             ${renderSection('Owner Address', owner, 'blue-400')}
             ${renderExplorers(chaininfo.explorers, owner)}
-            ${renderSection('Metadata', metadataUrl, 'green-400', tokenURI)}
+            ${renderSection('Metadata', tokenURI, 'green-400', metadataUrl)}
         </div>`;
 }
 
@@ -67,7 +67,7 @@ async function displayChainResult(metadata) {
         <div class="bg-gray-800 p-6 rounded-lg shadow-md text-white text-center">
             ${renderSection('Chain Name', chaininfo.name, 'blue-400')}
             ${renderSection('Chain ID', metadata["0"], 'gray-300')}
-            ${renderSection('Contract', metadata["1"], 'yellow-300', metadata["1"])}
+            ${renderSection('Contract', metadata["1"], 'yellow-300')}
             ${renderExplorers(chaininfo.explorers, metadata["1"])}
             ${renderTokenID(chaininfo, metadata)}
             ${renderOwnerButton(metadata)}
