@@ -63,10 +63,10 @@ async function getCurrentAccount() {
 
 
 async function verify() {
-
     const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
     const abipath = 'abi.json'
     await checkAndSwitchNetwork(11155111)
+    const startTime = performance.now();
     const fileInput = document.getElementById('fileToUpload');
     const file = fileInput.files[0];
     if (!file) {
@@ -87,10 +87,14 @@ async function verify() {
         resultDiv.innerHTML =`` 
         
     }
+    const endTime = performance.now();
+    const executionTime = endTime - startTime;
+    console.log(`Execution time: ${executionTime} ms`);
 }
 async function registernft(){
     const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
     const abipath = 'abi.json'
+    await checkAndSwitchNetwork(11155111)
     const fileInput = document.getElementById('fileToUpload');
     const file = fileInput.files[0];
     if (!file) {
@@ -107,8 +111,30 @@ async function registernft(){
     const register_CA = document.getElementById('contractAddress').value
     const register_tokenid = document.getElementById('tokenId').value
     console.log(`File Hash (Base58): ${hashArray}\nChain ID: ${selected_chain_id} \nContract Address: ${register_CA}\ntoken ID: ${register_tokenid}`);
+    try{
+        await window.contract.methods.registerNFT(hashArray, selected_chain_id,register_CA,register_tokenid).send({from:account})
+        alert("NFT registered successfully!");
+    } catch (error) {
+        let errorMessage = "Transaction failed";
 
-    await window.contract.methods.registerNFT(hashArray, selected_chain_id,register_CA,register_tokenid).send({from:account})
+        // Check if the error contains custom error information
+        if (error.code === "UNPREDICTABLE_GAS_LIMIT" && error.error && error.error.data) {
+            const errorData = error.error.data;
+
+            // Check for specific custom error signatures
+            if (errorData.includes("InvalidContractAddress")) {
+                errorMessage = "Invalid contract address provided.";
+            } else if (errorData.includes("FileAlreadyRegistered")) {
+                errorMessage = "This file is already registered.";
+            } else {
+                // Use generic error message if the error is not recognized
+                errorMessage = "An unexpected error occurred.";
+            }
+        }
+
+        // Show the specific error message in an alert
+        alert(`Error: ${errorMessage}`);
+    }
 
 }
 async function getChainInfo(chainId) {
@@ -130,6 +156,7 @@ async function getChainInfo(chainId) {
         console.error('Error fetching chain info:', error);
         return{ name: null, explorers: [] };
     }
+    
 }
 
 async function displayChainResult(metadata) {
@@ -152,12 +179,13 @@ async function displayChainResult(metadata) {
 
 
 async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChainId) {
+    
     await checkAndSwitchNetwork(requiredChainId); // Ensure we're on the correct network
+    const startTime = performance.now();
     const chaininfo = await getChainInfo(requiredChainId);
     const resultDiv = document.getElementById('ownerOf');
     const ownerabi = 'getMetadataABI.json'; // Path to ABI file containing both ownerOf and tokenURI functions
     const contract = await loadContract(ownerabi, contractAddress);
-
     try {
         // Fetch owner
         const owner = await contract.methods.ownerOf(tokenId).call();
@@ -184,6 +212,9 @@ async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChai
         console.error(`Error fetching owner or metadata: ${error.message}`);
         resultDiv.innerHTML = `Error fetching owner or metadata: ${error.message}`;
     }
+    const endTime = performance.now();
+    const executionTime = endTime - startTime;
+    console.log(`Execution time: ${executionTime} ms`);
 }
 
 
