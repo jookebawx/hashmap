@@ -75,4 +75,4 @@ async function displayChainResult(metadata) {
     `;
 }
 
-export { renderSection, renderExplorers, renderTokenID, renderOwnerButton, renderError, displayChainResult };
+export { renderSection, renderExplorers, renderTokenID, renderOwnerButton, renderError, renderOwnerInfo, displayChainResult };
