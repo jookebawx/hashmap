@@ -30,6 +30,7 @@ async function loadContract(abipath,contractaddress){
     const abi = await fetchABI(abipath);
     return await new window.web3.eth.Contract(abi,contractaddress);
 }
+
 async function connectMetaMask() {
     if (window.ethereum) {
         try {
@@ -37,10 +38,26 @@ async function connectMetaMask() {
             await window.ethereum.enable();
             const account = await getCurrentAccount();
             if (account) {
-                document.getElementById('walletAddress').style.display = 'block';
-                document.getElementById('address').textContent = account;
-                document.getElementById('upload').style.display = 'block';
-                document.getElementById('check').style.display = 'block';
+                // Add animation to header and button
+                const header = document.getElementById('header');
+                const connectButton = document.getElementById('connectButton');
+                header.classList.add('opacity-0', 'translate-y-[-20px]'); // Fade out and move up
+                connectButton.classList.add('opacity-0', 'translate-y-[-20px]'); // Fade out and move up
+
+                // Wait for the animation to finish (500ms, matching the transition duration)
+                setTimeout(() => {
+                    // Hide the header and button
+                    header.classList.add('hidden');
+                    connectButton.classList.add('hidden');
+
+                    // Show the rest of the content
+                    document.getElementById('walletAddress').classList.remove('hidden');
+                    document.getElementById('upload').classList.remove('hidden');
+                    document.getElementById('check').classList.remove('hidden');
+
+                    // Display the connected wallet address
+                    document.getElementById('address').textContent = account;
+                }, 500); // Match the duration of the transition (500ms)
             } else {
                 alert('MetaMask account not found.');
             }
@@ -167,6 +184,69 @@ function generateExplorerLinks(explorers, address) {
     `).join('');
 }
 
+// Helper function to render a general section (e.g., Owner, Metadata)
+function renderSection(title, content, colorClass, link = null) {
+    return `
+        <div class="mt-4">
+            <h3 class="text-xl font-bold text-${colorClass}">${title}:</h3>
+            ${link ? `<a href="${link}" class="text-indigo-400 hover:underline break-all">${content}</a>` 
+                  : `<p class="text-lg font-semibold text-gray-300 break-words">${content}</p>`}
+        </div>`;
+}
+
+// Helper function to render explorers
+function renderExplorers(explorers, address) {
+    return `
+        <div class="mt-4">
+            <h3 class="text-xl font-bold text-yellow-400">Explorers:</h3>
+            <ul class="list-disc list-inside text-gray-200">
+                ${explorers.map(explorer => `
+                    <li>
+                        <a href="${explorer.url}/address/${address}" target="_blank" class="text-blue-400 hover:underline">
+                            ${address} (${explorer.name})
+                        </a>
+                    </li>
+                `).join('')}
+            </ul>
+        </div>`;
+}
+
+// Helper function to render tokenID
+function renderTokenID(chaininfo, metadata) {
+    return renderSection('Token ID', `<a href="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}" class="text-green-400 hover:underline">${metadata["2"]}</a>`, 'green-400');
+}
+
+// Helper function to render the button for fetching owner info
+function renderOwnerButton(metadata) {
+    return `
+        <h2 id="ownerOf" class="text-lg font-bold text-purple-400 mt-4"></h2>
+        <button onclick="fetchOwnerWithNetworkCheck('${metadata["2"]}', '${metadata["1"]}', ${metadata["0"]})"
+                class="mt-4 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">
+            Get Owner Address
+        </button>
+    `;
+}
+
+// Helper function to render error messages
+function renderError(errorMessage) {
+    return `
+        <div class="max-w-lg mx-auto p-6 bg-red-700 text-white rounded-lg shadow-md mt-6 text-center">
+            <h2 class="text-2xl font-bold">Error fetching owner or metadata</h2>
+            <p class="text-gray-300">${errorMessage}</p>
+        </div>`;
+}
+
+// Helper function to dynamically render the owner info
+function renderOwnerInfo({ owner, chaininfo, metadataUrl, tokenURI, metadata }) {
+    return `
+        <div class="max-w-lg mx-auto p-6 bg-gray-800 rounded-lg shadow-md mt-6 text-white">
+            ${renderSection('Owner Address', owner, 'blue-400')}
+            ${renderExplorers(chaininfo.explorers, owner)}
+            ${renderSection('Metadata', metadataUrl, 'green-400', tokenURI)}
+        </div>`;
+}
+
+// Display chain result
 async function displayChainResult(metadata) {
     const chaininfo = await getChainInfo(metadata["0"]);
     const resultDiv = document.getElementById('chainResult');
@@ -232,69 +312,6 @@ async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChai
     const endTime = performance.now();
     console.log(`Execution time: ${endTime - startTime} ms`);
 }
-
-// Helper function to dynamically render the owner info
-function renderOwnerInfo({ owner, chaininfo, metadataUrl, tokenURI, metadata }) {
-    return `
-        <div class="max-w-lg mx-auto p-6 bg-gray-800 rounded-lg shadow-md mt-6 text-white">
-            ${renderSection('Owner Address', owner, 'blue-400')}
-            ${renderExplorers(chaininfo.explorers, owner)}
-            ${renderSection('Metadata', metadataUrl, 'green-400', tokenURI)}
-        </div>`;
-}
-
-// Helper function to render a general section (e.g., Owner, Metadata)
-function renderSection(title, content, colorClass, link = null) {
-    return `
-        <div class="mt-4">
-            <h3 class="text-xl font-bold text-${colorClass}">${title}:</h3>
-            ${link ? `<a href="${link}" class="text-indigo-400 hover:underline break-all">${content}</a>` 
-                  : `<p class="text-lg font-semibold text-gray-300 break-words">${content}</p>`}
-        </div>`;
-}
-
-// Helper function to render explorers
-function renderExplorers(explorers, owner) {
-    return `
-        <div class="mt-4">
-            <h3 class="text-xl font-bold text-yellow-400">Explorers:</h3>
-            <ul class="list-disc list-inside text-gray-200">
-                ${explorers.map(explorer => `
-                    <li>
-                        <a href="${explorer.url}/address/${owner}" target="_blank" class="text-blue-400 hover:underline">
-                            ${owner} (${explorer.name})
-                        </a>
-                    </li>
-                `).join('')}
-            </ul>
-        </div>`;
-}
-
-// Helper function to render tokenID
-function renderTokenID(chaininfo, metadata) {
-    return renderSection('Token ID', `<a href="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}" class="text-green-400 hover:underline">${metadata["2"]}</a>`, 'green-400');
-}
-
-// Helper function to render the button for fetching owner info
-function renderOwnerButton(metadata) {
-    return `
-        <h2 id="ownerOf" class="text-lg font-bold text-purple-400 mt-4"></h2>
-        <button onclick="fetchOwnerWithNetworkCheck('${metadata["2"]}', '${metadata["1"]}', ${metadata["0"]})"
-                class="mt-4 bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">
-            Get Owner Address
-        </button>
-    `;
-}
-
-// Helper function to render error messages
-function renderError({ errorMessage }) {
-    return `
-        <div class="max-w-lg mx-auto p-6 bg-red-700 text-white rounded-lg shadow-md mt-6 text-center">
-            <h2 class="text-2xl font-bold">Error fetching owner or metadata</h2>
-            <p class="text-gray-300">${errorMessage}</p>
-        </div>`;
-}
-
 
 async function checkAndSwitchNetwork(requiredChainId) {
     if (window.ethereum) {
