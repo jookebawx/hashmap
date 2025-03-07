@@ -2,6 +2,7 @@
 import { checkAndSwitchNetwork } from './network.js';
 import { getCurrentAccount } from './wallet.js';
 import { renderOwnerInfo, renderError, displayChainResult } from './render.js';
+import { getChainInfo, checkAndSwitchNetwork } from './network.js';
 
 async function fetchABI(abipath) {
     const response = await fetch(abipath);
