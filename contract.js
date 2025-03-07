@@ -1,5 +1,4 @@
 // contract.js
-import { checkAndSwitchNetwork } from './network.js';
 import { getCurrentAccount } from './wallet.js';
 import { renderOwnerInfo, renderError, displayChainResult } from './render.js';
 import { getChainInfo, checkAndSwitchNetwork } from './network.js';
