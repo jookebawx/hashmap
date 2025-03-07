@@ -1,6 +1,4 @@
 // render.js
-import { getChainInfo } from './network.js';
-
 function renderSection(title, content, colorClass, link = null) {
     return `
         <div class="mt-4">
@@ -41,6 +39,15 @@ function renderOwnerButton(metadata) {
     `;
 }
 
+function renderOwnerInfo({ owner, chaininfo, metadataUrl, tokenURI, metadata }) {
+    return `
+        <div class="max-w-lg mx-auto p-6 bg-gray-800 rounded-lg shadow-md mt-6 text-white">
+            ${renderSection('Owner Address', owner, 'blue-400')}
+            ${renderExplorers(chaininfo.explorers, owner)}
+            ${renderSection('Metadata', metadataUrl, 'green-400', tokenURI)}
+        </div>`;
+}
+
 function renderError(errorMessage) {
     return `
         <div class="max-w-lg mx-auto p-6 bg-red-700 text-white rounded-lg shadow-md mt-6 text-center">
@@ -50,7 +57,7 @@ function renderError(errorMessage) {
 }
 
 async function displayChainResult(metadata) {
-    const chaininfo = await getChainInfo(metadata["0"]); // Ensure this function is imported
+    const chaininfo = await getChainInfo(metadata["0"]);
     const resultDiv = document.getElementById('chainResult');
     if (!chaininfo.name) {
         resultDiv.innerHTML = renderError("Chain not found");
