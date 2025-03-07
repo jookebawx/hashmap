@@ -168,16 +168,9 @@ async function displayChainResult(metadata) {
                                <h2>Chain ID: ${metadata["0"]}</h2>
                                <h2>Contract Address: ${metadata["1"]}</h2>
                                <h3>Explorers:</h3>
-<<<<<<< HEAD
-                               <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${metadata["1"]}" target="_blank">${metadata["1"]} (${explorer.name})</a></li>`).join('')}</ul>
-                               <h2>Token ID: <a href ="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>
-                               <h2 id="ownerOf"></h2>
-                              <button type="button" onclick="fetchOwnerWithNetworkCheck('${metadata["2"]}', '${metadata["1"]}', ${metadata["0"]})">Get Owner Address</button>`;
-=======
                                <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${metadata["1"]}" target="_blank">${metadata["1"]}(${explorer.name})</a></li>`).join('')}</ul>
                                <h2>Token ID: <a href ="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>`
 ;
->>>>>>> master
     } else {
         resultDiv.innerHTML = `<h2>Chain not found</h2>`;
     }
