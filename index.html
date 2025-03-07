@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hashmap: NFT Resolver Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col justify-center items-center p-6">
+    
+    <!-- Logo and Header -->
+    <div id="header" class="text-center mb-8 transition-all duration-500 ease-in-out"> 
+        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
+            Hashmap
+        </h1>
+        <p class="text-lg text-gray-400">NFT Resolver Contracts</p>
+    </div>
+
+    <!-- Connect MetaMask Button -->
+    <div id="connectButton" class="text-center transition-all duration-500 ease-in-out">
+        <button onclick="connectMetaMask()" class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">
+            Connect MetaMask
+        </button>
+    </div>
+
+    <!-- Connected Wallet Address -->
+    <div id="walletAddress" class="hidden text-center mt-4">
+        <p class="text-lg font-semibold">Connected Wallet Address: <span id="address" class="text-yellow-300"></span></p>
+    </div>
+    
+    <!-- Upload Section -->
+    <div id="upload" class="hidden max-w-lg mx-auto mt-6 p-6 bg-gray-800 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Upload File</h1>
+        <form id="uploadForm" class="space-y-4">
+            <input type="file" name="fileToUpload" id="fileToUpload" class="block w-full text-sm text-gray-300 file:bg-gradient-to-r file:from-blue-500 file:to-purple-500 file:text-white file:py-2 file:px-4 file:rounded-lg file:border-none">
+            <button type="button" onclick="verify()" class="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">
+                Verify
+            </button>
+        </form>
+    </div>
+    
+    <!-- Chain and OpenSea Results -->
+    <div id="chainResult" class="mt-4 text-center"></div>
+    
+    <!-- Register NFT Section -->
+    <div id="check" class="hidden max-w-lg mx-auto mt-6 p-6 bg-gray-800 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Register your NFT</h1>
+        <form id="RegisterNFT" class="space-y-4">
+            <label for="chainDropdown" class="block text-gray-300">Blockchain Network:</label>
+            <select id="chainDropdown" class="block w-full p-2 border rounded-lg bg-gray-700 text-white"></select>
+            
+            <label for="contractAddress" class="block text-gray-300">Contract Address:</label>
+            <input type="text" id="contractAddress" name="contractAddress" required class="block w-full p-2 border rounded-lg bg-gray-700 text-white">
+            
+            <label for="tokenId" class="block text-gray-300">Token ID:</label>
+            <input type="number" id="tokenId" name="tokenId" required class="block w-full p-2 border rounded-lg bg-gray-700 text-white">
+            
+            <button type="button" onclick="registernft()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">
+                Register
+            </button>
+        </form>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
