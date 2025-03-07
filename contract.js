@@ -1,4 +1,7 @@
 // contract.js
+import { checkAndSwitchNetwork } from './network.js';
+import { getCurrentAccount } from './wallet.js';
+
 async function fetchABI(abipath) {
     const response = await fetch(abipath);
     return response.json();
@@ -12,7 +15,7 @@ async function loadContract(abipath, contractaddress) {
 async function verify() {
     const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
     const abipath = 'abi.json';
-    await checkAndSwitchNetwork(11155111);
+    await checkAndSwitchNetwork(11155111); // Ensure this function is imported
     const fileInput = document.getElementById('fileToUpload');
     const file = fileInput.files[0];
     if (!file) {
@@ -36,7 +39,7 @@ async function verify() {
 async function registernft() {
     const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
     const abipath = 'abi.json';
-    await checkAndSwitchNetwork(11155111);
+    await checkAndSwitchNetwork(11155111); // Ensure this function is imported
     const fileInput = document.getElementById('fileToUpload');
     const file = fileInput.files[0];
     if (!file) {

@@ -1,4 +1,6 @@
 // render.js
+import { getChainInfo } from './network.js';
+
 function renderSection(title, content, colorClass, link = null) {
     return `
         <div class="mt-4">
@@ -48,7 +50,7 @@ function renderError(errorMessage) {
 }
 
 async function displayChainResult(metadata) {
-    const chaininfo = await getChainInfo(metadata["0"]);
+    const chaininfo = await getChainInfo(metadata["0"]); // Ensure this function is imported
     const resultDiv = document.getElementById('chainResult');
     if (!chaininfo.name) {
         resultDiv.innerHTML = renderError("Chain not found");
