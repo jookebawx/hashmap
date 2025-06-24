@@ -49,27 +49,24 @@ async function registernft() {
     }
     const fileBuffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = '0x' + Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     window.contract = await loadContract(abipath, contractaddress);
     const account = await getCurrentAccount();
-    const selected_chain_id = document.getElementById('chainDropdown').value;
+    const selected_chain_id = parseInt(document.getElementById('chainDropdown').value);
     const register_CA = document.getElementById('contractAddress').value;
-    const register_tokenid = document.getElementById('tokenId').value;
+    const register_tokenid = parseInt(document.getElementById('tokenId').value);
+    const isRegistered = await contract.methods.isContractRegistered(hashHex).call();
+    if (isRegistered) {
+        alert("This file has already been registered.");
+        return; // 🚫 Skip sending the transaction
+    }
     try {
-        await window.contract.methods.registerNFT(hashArray, selected_chain_id, register_CA, register_tokenid).send({ from: account });
+        await window.contract.methods.registerNFT(hashHex, selected_chain_id, register_CA, register_tokenid).send({ from: account });
         alert("NFT registered successfully!");
     } catch (error) {
-        let errorMessage = "Transaction failed";
-        if (error.code === "UNPREDICTABLE_GAS_LIMIT" && error.error && error.error.data) {
-            const errorData = error.error.data;
-            if (errorData.includes("InvalidContractAddress")) {
-                errorMessage = "Invalid contract address provided.";
-            } else if (errorData.includes("FileAlreadyRegistered")) {
-                errorMessage = "This file is already registered.";
-            }
-        }
-        alert(`Error: ${errorMessage}`);
-    }
+        if(error.code == 1100)
+            alert(`Error: Invalid Contract Address Input. Check Again`);
+    }   
 }
 
 async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChainId) {
