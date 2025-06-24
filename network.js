@@ -36,7 +36,7 @@ async function checkAndSwitchNetwork(requiredChainId) {
                                 params: [{
                                     chainId: '0x' + requiredChainId.toString(16),
                                     chainName: chainInfo.name,
-                                    rpcUrls: [chainInfo.rpc],
+                                    rpcUrls: chainInfo.rpcUrls || [],
                                     nativeCurrency: {
                                         name: chainInfo.nativeCurrency.name,
                                         symbol: chainInfo.nativeCurrency.symbol,

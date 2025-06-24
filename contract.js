@@ -98,7 +98,7 @@ async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChai
 
         // Get chain info
         const chaininfo = await getChainInfo(requiredChainId);
-
+        findImageUrl(metadataUrl)
         // Render result dynamically
         resultDiv.innerHTML = renderOwnerInfo({
             owner,
@@ -115,6 +115,35 @@ async function fetchOwnerWithNetworkCheck(tokenId, contractAddress, requiredChai
 
     const endTime = performance.now();
     console.log(`Execution time: ${endTime - startTime} ms`);
+}
+
+async function findImageUrl(metadataUrl) {
+    try {
+        // Fetch the JSON data from the metadata URL
+        const response = await fetch(metadataUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Parse the JSON data
+        const metadata = await response.json();
+
+        // Iterate through the key-value pairs to find the image URL
+        for (const [key, value] of Object.entries(metadata)) {
+            // Check if the value is a string and matches a common image URL pattern
+            if (typeof value === 'string' && /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(value)) {
+                console.log(`Image URL found in key "${key}": ${value}`);
+            }
+        }
+
+        // If no image URL is found
+        console.log('No image URL found in the metadata.');
+        return null;
+
+    } catch (error) {
+        console.error('Error fetching or parsing the metadata:', error);
+        return null;
+    }
 }
 
 export { fetchABI, loadContract, verify, registernft, fetchOwnerWithNetworkCheck };

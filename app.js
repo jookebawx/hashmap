@@ -34,26 +34,44 @@ function previewFile() {
 
     filePreview.innerHTML = ''; // Clear previous preview
 
+    const fileURL = URL.createObjectURL(file);
+
     if (file.type.startsWith('image/')) {
         // Preview for images
         const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
+        img.src = fileURL;
         img.alt = "File Preview";
         img.classList.add('max-w-full', 'max-h-full', 'object-contain', 'rounded-lg', 'shadow-md');
-        
-        // Create a container for the image
+
         const container = document.createElement('div');
         container.classList.add('w-[500px]', 'h-[500px]', 'flex', 'items-center', 'justify-center', 'border', 'border-gray-700', 'rounded-lg', 'overflow-hidden');
         container.appendChild(img);
-        
         filePreview.appendChild(container);
+
     } else if (file.type === 'application/pdf') {
         // Preview for PDFs
         const embed = document.createElement('embed');
-        embed.src = URL.createObjectURL(file);
+        embed.src = fileURL;
         embed.type = 'application/pdf';
         embed.classList.add('w-full', 'h-96', 'rounded-lg', 'shadow-md');
         filePreview.appendChild(embed);
+
+    } else if (file.type.startsWith('audio/')) {
+        // Preview for audio files
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = fileURL;
+        audio.classList.add('w-full', 'mt-4');
+        filePreview.appendChild(audio);
+
+    } else if (file.type.startsWith('video/')) {
+        // Preview for video files
+        const video = document.createElement('video');
+        video.controls = true;
+        video.src = fileURL;
+        video.classList.add('w-full', 'h-auto', 'rounded-lg', 'shadow-md', 'mt-4');
+        filePreview.appendChild(video);
+
     } else {
         // Preview for other file types (e.g., text files)
         const reader = new FileReader();
