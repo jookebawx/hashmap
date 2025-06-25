@@ -23,7 +23,7 @@
         </button>
     </div>
 
-    <!-- Connected Wallet Address -->
+ <!-- Connected Wallet Address -->
     <div id="walletAddress" class="hidden text-center mt-4">
         <p class="text-lg font-semibold">Connected Wallet Address: <span id="address" class="text-yellow-300"></span></p>
     </div>
@@ -32,7 +32,9 @@
     <div id="upload" class="hidden max-w-lg mx-auto mt-6 p-6 bg-gray-800 rounded-lg shadow-md">
         <h1 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Upload File</h1>
         <form id="uploadForm" class="space-y-4">
-            <input type="file" name="fileToUpload" id="fileToUpload" class="block w-full text-sm text-gray-300 file:bg-gradient-to-r file:from-blue-500 file:to-purple-500 file:text-white file:py-2 file:px-4 file:rounded-lg file:border-none" onchange="previewFile()" webkitdirectory multiple>
+           <input type="file" name="fileToUpload" id="fileToUpload"
+            class="block w-full text-sm text-gray-300 file:bg-gradient-to-r file:from-blue-500 file:to-purple-500 file:text-white file:py-2 file:px-4 file:rounded-lg file:border-none"
+            onchange="previewFile()" multiple>
             <button type="button" onclick="verify()" class="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">
                 Verify
             </button>
