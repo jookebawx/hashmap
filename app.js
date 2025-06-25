@@ -24,68 +24,76 @@ async function populateDropdown() {
 
 function previewFile() {
     const fileInput = document.getElementById('fileToUpload');
-    const file = fileInput.files[0];
+    const files = fileInput.files;
     const filePreview = document.getElementById('filePreview');
 
-    if (!file) {
-        filePreview.innerHTML = ''; // Clear preview if no file is selected
+    filePreview.innerHTML = ''; // Clear previous preview
+
+    if (!files || files.length === 0) {
         return;
     }
 
-    filePreview.innerHTML = ''; // Clear previous preview
-    const fileURL = URL.createObjectURL(file);
+    Array.from(files).forEach(file => {
+        const fileURL = URL.createObjectURL(file);
 
-    if (file.type.startsWith('image/')) {
-        const img = document.createElement('img');
-        img.src = fileURL;
-        img.alt = "File Preview";
-        img.classList.add('max-w-full', 'max-h-full', 'object-contain', 'rounded-lg', 'shadow-md');
+        // Create a container for each file preview
+        const section = document.createElement('div');
+        section.classList.add('mb-6');
 
-        const container = document.createElement('div');
-        container.classList.add('w-[500px]', 'h-[500px]', 'flex', 'items-center', 'justify-center', 'border', 'border-gray-700', 'rounded-lg', 'overflow-hidden');
-        container.appendChild(img);
-        filePreview.appendChild(container);
+        const label = document.createElement('p');
+        label.textContent = `📄 ${file.webkitRelativePath || file.name}`;
+        label.classList.add('text-sm', 'mb-2', 'text-gray-300');
+        section.appendChild(label);
 
-    } else if (file.type === 'application/pdf') {
-        const embed = document.createElement('embed');
-        embed.src = fileURL;
-        embed.type = 'application/pdf';
-        embed.classList.add('w-full', 'h-96', 'rounded-lg', 'shadow-md');
-        filePreview.appendChild(embed);
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = fileURL;
+            img.alt = "Image Preview";
+            img.classList.add('max-w-full', 'max-h-64', 'rounded-lg', 'shadow-md');
+            section.appendChild(img);
 
-    } else if (file.type.startsWith('audio/')) {
-        const audio = document.createElement('audio');
-        audio.controls = true;
-        audio.src = fileURL;
-        audio.classList.add('w-full', 'mt-4');
-        filePreview.appendChild(audio);
+        } else if (file.type === 'application/pdf') {
+            const embed = document.createElement('embed');
+            embed.src = fileURL;
+            embed.type = 'application/pdf';
+            embed.classList.add('w-full', 'h-96', 'rounded-lg', 'shadow-md');
+            section.appendChild(embed);
 
-    } else if (file.type.startsWith('video/')) {
-        const video = document.createElement('video');
-        video.controls = true;
-        video.src = fileURL;
-        video.classList.add('w-full', 'h-auto', 'rounded-lg', 'shadow-md', 'mt-4');
-        filePreview.appendChild(video);
+        } else if (file.type.startsWith('audio/')) {
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.src = fileURL;
+            audio.classList.add('w-full', 'mt-2');
+            section.appendChild(audio);
 
-    } else if (file.type.startsWith('text/') || file.name.endsWith('.txt') || file.name.endsWith('.csv') || file.name.endsWith('.log')) {
-        // Only preview safe text-based files
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const text = event.target.result;
-            const pre = document.createElement('pre');
-            pre.textContent = text;
-            pre.classList.add('bg-gray-800', 'p-4', 'rounded-lg', 'text-white', 'text-left', 'overflow-auto');
-            filePreview.appendChild(pre);
-        };
-        reader.readAsText(file);
-    } else {
-        // Unsupported file types (e.g., .zip, .exe)
-        const message = document.createElement('p');
-        message.textContent = 'This file type cannot be previewed.';
-        message.classList.add('text-gray-400', 'italic', 'mt-2');
-        filePreview.appendChild(message);
-    }
+        } else if (file.type.startsWith('video/')) {
+            const video = document.createElement('video');
+            video.controls = true;
+            video.src = fileURL;
+            video.classList.add('w-full', 'h-auto', 'rounded-lg', 'shadow-md', 'mt-2');
+            section.appendChild(video);
+
+        } else if (file.type.startsWith('text/') || file.name.endsWith('.txt') || file.name.endsWith('.csv') || file.name.endsWith('.log')) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const pre = document.createElement('pre');
+                pre.textContent = event.target.result;
+                pre.classList.add('bg-gray-800', 'p-4', 'rounded-lg', 'text-white', 'text-left', 'overflow-auto', 'max-h-60');
+                section.appendChild(pre);
+            };
+            reader.readAsText(file);
+
+        } else {
+            const msg = document.createElement('p');
+            msg.textContent = 'This file type cannot be previewed.';
+            msg.classList.add('text-gray-400', 'italic');
+            section.appendChild(msg);
+        }
+
+        filePreview.appendChild(section);
+    });
 }
+
 
 populateDropdown();
 
