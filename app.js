@@ -33,11 +33,9 @@ function previewFile() {
     }
 
     filePreview.innerHTML = ''; // Clear previous preview
-
     const fileURL = URL.createObjectURL(file);
 
     if (file.type.startsWith('image/')) {
-        // Preview for images
         const img = document.createElement('img');
         img.src = fileURL;
         img.alt = "File Preview";
@@ -49,7 +47,6 @@ function previewFile() {
         filePreview.appendChild(container);
 
     } else if (file.type === 'application/pdf') {
-        // Preview for PDFs
         const embed = document.createElement('embed');
         embed.src = fileURL;
         embed.type = 'application/pdf';
@@ -57,7 +54,6 @@ function previewFile() {
         filePreview.appendChild(embed);
 
     } else if (file.type.startsWith('audio/')) {
-        // Preview for audio files
         const audio = document.createElement('audio');
         audio.controls = true;
         audio.src = fileURL;
@@ -65,15 +61,14 @@ function previewFile() {
         filePreview.appendChild(audio);
 
     } else if (file.type.startsWith('video/')) {
-        // Preview for video files
         const video = document.createElement('video');
         video.controls = true;
         video.src = fileURL;
         video.classList.add('w-full', 'h-auto', 'rounded-lg', 'shadow-md', 'mt-4');
         filePreview.appendChild(video);
 
-    } else {
-        // Preview for other file types (e.g., text files)
+    } else if (file.type.startsWith('text/') || file.name.endsWith('.txt') || file.name.endsWith('.csv') || file.name.endsWith('.log')) {
+        // Only preview safe text-based files
         const reader = new FileReader();
         reader.onload = (event) => {
             const text = event.target.result;
@@ -83,6 +78,12 @@ function previewFile() {
             filePreview.appendChild(pre);
         };
         reader.readAsText(file);
+    } else {
+        // Unsupported file types (e.g., .zip, .exe)
+        const message = document.createElement('p');
+        message.textContent = 'This file type cannot be previewed.';
+        message.classList.add('text-gray-400', 'italic', 'mt-2');
+        filePreview.appendChild(message);
     }
 }
 
