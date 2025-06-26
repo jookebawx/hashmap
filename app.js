@@ -137,8 +137,34 @@ function previewFile() {
         filePreview.appendChild(section);
     });
 }
+function addCustomField() {
+    const container = document.getElementById('customFields');
 
+    const fieldGroup = document.createElement('div');
+    fieldGroup.classList.add('flex', 'space-x-2', 'items-center');
 
+    const keyInput = document.createElement('input');
+    keyInput.type = 'text';
+    keyInput.placeholder = 'Key';
+    keyInput.classList.add('flex-1', 'p-2', 'rounded-lg', 'bg-gray-700', 'text-white');
+
+    const valueInput = document.createElement('input');
+    valueInput.type = 'text';
+    valueInput.placeholder = 'Value';
+    valueInput.classList.add('flex-1', 'p-2', 'rounded-lg', 'bg-gray-700', 'text-white');
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.textContent = '✕';
+    removeBtn.classList.add('text-red-400', 'hover:text-red-600', 'font-bold');
+    removeBtn.onclick = () => container.removeChild(fieldGroup);
+
+    fieldGroup.appendChild(keyInput);
+    fieldGroup.appendChild(valueInput);
+    fieldGroup.appendChild(removeBtn);
+
+    container.appendChild(fieldGroup);
+}
 // Expose functions to the global scope for HTML event handlers
 window.connectMetaMask = connectMetaMask;
 window.verify = verify;
@@ -149,3 +175,4 @@ window.getChainInfo = getChainInfo;
 window.checkAndSwitchNetwork=checkAndSwitchNetwork;
 window.previewFile = previewFile;
 window.openChainListPopup = openChainListPopup;
+window.addCustomField = addCustomField;

@@ -77,9 +77,34 @@ async function registernft() {
         return;
     }
 
-    const selected_chain_id = parseInt(document.getElementById('chainDropdown').value);
+    const selected_chain_id = parseInt(document.getElementById('chainID').value);
     const register_CA = document.getElementById('contractAddress').value;
     const register_tokenid = parseInt(document.getElementById('tokenId').value);
+    const metadata = {};
+    const customFieldGroups = document.querySelectorAll('#customFields > div');
+
+    customFieldGroups.forEach(group => {
+    const inputs = group.querySelectorAll('input');
+    const key = inputs[0]?.value.trim();
+    const value = inputs[1]?.value.trim();
+    if (key && value) {
+        metadata[key] = value;
+        }
+    });
+    
+    // Step 2: Convert to JSON string
+    const jsonString = JSON.stringify(metadata);
+    console.log(jsonString)
+    // Step 3: ABI encode packed
+    const encodedPacked = ethers.solidityPacked(['string'], [jsonString])
+    console.log(encodedPacked)
+    // ✅ You can decode this:
+    const decodedString = web3.utils.hexToUtf8(encodedPacked);
+    console.log("Decoded JSON string:", decodedString);
+
+    // ✅ Optional: parse it back into an object
+    const decodedObject = JSON.parse(decodedString);
+    console.log("Decoded JSON object:", decodedObject);
 
     const account = await getCurrentAccount();
     window.contract = await loadContract(abipath, contractaddress);
