@@ -1,12 +1,7 @@
-# Hashmap NFT Registry Application v 1.25
+# Hashmap NFT Registry Application v 1.5
 
-This project includes a smart contract and a web application for managing NFTs. The smart contract (`test.sol`) handles the registration and retrieval of NFT information, while the web application (`test.html` and `app.js`) provides an interface for interacting with the contract and managing NFTs. The ABI file (`abi.json`) defines the contract's interface for interaction. v1.25 added a chain filtering python code (`filter chain.py`) and the filtered chain JSON file (`selected_chains.json`). The filtered chain are under these conditions:
-
-1. Networks that are not deprecated
-2. Networks that are compatible to ERC721 or/and ERC1155 standard
-3. Networks that are commonly used for NFT projects
-
-including their respective testnets. Further work considers adding non-EVM blockchain under the same conditions (e.g Solana, Stark, etc.)
+This project includes a smart contract and a web application for managing NFTs. The smart contract (`test.sol`) handles the registration and retrieval of NFT information, while the web application (`test.html` and `app.js`) provides an interface for interacting with the contract and managing NFTs. The ABI file (`abi.json`) defines the contract's interface for interaction.
+v1.5 added Get Metadata functionality to view the selected NFT's current owner (if exist) and metadata.
 
 ## Overview
 
@@ -38,7 +33,7 @@ The `test.sol` contract allows for registering NFTs with the following functions
 
 ### 2. Web Application
 
-**HTML File**: `test.html`
+**HTML File**: `index.html`
 
 This file provides the user interface for interacting with the smart contract. It includes:
 - A button to connect MetaMask.
@@ -72,7 +67,7 @@ This JSON file provides the ABI (Application Binary Interface) for the smart con
 1. **Clone the Repository**:
 
     ```bash
-    git clone https://github.com/your-repo/hashmap.git
+    git clone https://github.com/jookebawx/hashmap.git
     cd hashmap
     ```
 

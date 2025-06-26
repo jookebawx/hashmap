@@ -1,142 +1,151 @@
+// app.js
+import { connectMetaMask, getCurrentAccount } from './wallet.js';
+import { verify, registernft, fetchOwnerWithNetworkCheck } from './contract.js';
+import { getChainInfo, checkAndSwitchNetwork } from './network.js';
+import { displayChainResult } from './render.js';
 
-
-
-async function populateDropdown() {
+async function openChainListPopup() {
     try {
-        const response = await fetch('selected_chains.json');
-        const data = await response.json()
-        const dropdown = document.getElementById('chainDropdown');
-        dropdown.innerHTML = ''; // Clear any existing options
-        
-        data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.chainId;
-            option.textContent = item.name;
-            dropdown.appendChild(option);
-        });
+        const response = await fetch('https://chainid.network/chains.json');
+        const chains = await response.json();
+
+        const popup = window.open('', 'ChainList', 'width=600,height=600');
+
+        popup.document.write(`
+            <html>
+                <head>
+                    <title>Chain ID Reference</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 20px; background-color: #111; color: #eee; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+                        th, td { padding: 8px 12px; border-bottom: 1px solid #555; text-align: left; }
+                        th { background-color: #222; }
+                        button { padding: 4px 8px; background-color: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; }
+                        button:hover { background-color: #4338ca; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Supported Blockchain Networks</h2>
+                    <table>
+                        <tr><th>Chain ID</th><th>Network Name</th><th>Short Name</th><th>Select</th></tr>
+                        ${chains.map(chain => `
+                            <tr>
+                                <td>${chain.chainId}</td>
+                                <td>${chain.name}</td>
+                                <td>${chain.shortName || '-'}</td>
+                                <td>
+                                    <button onclick="selectChain(${chain.chainId})">Select</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </table>
+
+                    <script>
+                        function selectChain(chainId) {
+                            if (window.opener && !window.opener.closed) {
+                                const input = window.opener.document.getElementById('chainID');
+                                if (input) {
+                                    input.value = chainId;
+                                    window.close();
+                                } else {
+                                    alert('Chain ID input field not found in the main window.');
+                                }
+                            } else {
+                                alert('Main window is not accessible.');
+                            }
+                        }
+                    </script>
+                </body>
+            </html>
+        `);
+        popup.document.close();
     } catch (error) {
-        console.error('Error fetching or parsing JSON:', error);
+        alert('Failed to fetch chain list. Please try again later.');
+        console.error(error);
     }
 }
 
-populateDropdown();
-const contractaddress = "0xA6979646c33b39523F5D506A0095B9c220622d63";
 
-async function fetchABI() {
-    const response = await fetch('abi.json');
-    return response.json();
-}
-
-async function loadContract(){
-    const abi = await fetchABI();
-    return await new window.web3.eth.Contract(abi,contractaddress);
-}
-async function connectMetaMask() {
-    if (window.ethereum) {
-        try {
-            window.web3 = new Web3(window.ethereum);
-            await window.ethereum.enable();
-            const account = await getCurrentAccount();
-            if (account) {
-                document.getElementById('walletAddress').style.display = 'block';
-                document.getElementById('address').textContent = account;
-                document.getElementById('upload').style.display = 'block';
-                document.getElementById('check').style.display = 'block';
-            } else {
-                alert('MetaMask account not found.');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Failed to connect to MetaMask. Please check your MetaMask setup.');
-        }
-    } else {
-        alert('MetaMask extension not detected. Please install MetaMask and try again.');
-    }
-}
-
-async function getCurrentAccount() {
-        const accounts = await window.web3.eth.getAccounts();
-        return accounts[0];
-    }
-
-
-
-async function verify() {
+function previewFile() {
     const fileInput = document.getElementById('fileToUpload');
-    const file = fileInput.files[0];
-    if (!file) {
-        alert('Please select a file to upload.');
+    const files = fileInput.files;
+    const filePreview = document.getElementById('filePreview');
+
+    filePreview.innerHTML = ''; // Clear previous preview
+
+    if (!files || files.length === 0) {
         return;
     }
-    const fileBuffer = await file.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    window.contract = await loadContract();
-    account = await getCurrentAccount();
-    try{
-        const metadata = await window.contract.methods.getNFTInfo(hashArray).call();
-        displayChainResult(metadata)
-    }catch(error){
-        alert(error.message)
-        const resultDiv = document.getElementById('chainResult');
-        resultDiv.innerHTML =`` 
-        
-    }
-}
-async function registernft(){
-    const fileInput = document.getElementById('fileToUpload');
-    const file = fileInput.files[0];
-    if (!file) {
-        alert('Please select a file to upload.');
-        return;
-    }
-    const fileBuffer = await file.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', fileBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    
-    window.contract = await loadContract();
-    account = await getCurrentAccount();
-    const selected_chain_id = document.getElementById('chainDropdown').value
-    const register_CA = document.getElementById('contractAddress').value
-    const register_tokenid = document.getElementById('tokenId').value
-    console.log(`File Hash (Base58): ${hashArray}\nChain ID: ${selected_chain_id} \nContract Address: ${register_CA}\ntoken ID: ${register_tokenid}`);
 
-    await window.contract.methods.registerNFT(hashArray, selected_chain_id,register_CA,register_tokenid).send({from:account})
+    Array.from(files).forEach(file => {
+        const fileURL = URL.createObjectURL(file);
 
-}
-async function getChainInfo(chainId) {
-    try {
-        const response = await fetch('selected_chains.json');
-        const data = await response.json()
-        // Find the chain with the specified chainId
-        const chain = data.find(chain => chain.chainId == chainId); // Use == to compare string and number
+        // Create a container for each file preview
+        const section = document.createElement('div');
+        section.classList.add('mb-6');
 
-        if (chain) {
-            const name = chain.name;
-            const explorers = chain.explorers ? chain.explorers.map(explorer => explorer) : [];
-            return {name,explorers};
+        const label = document.createElement('p');
+        label.textContent = `📄 ${file.webkitRelativePath || file.name}`;
+        label.classList.add('text-sm', 'mb-2', 'text-gray-300');
+        section.appendChild(label);
+
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = fileURL;
+            img.alt = "Image Preview";
+            img.classList.add('max-w-full', 'max-h-64', 'rounded-lg', 'shadow-md');
+            section.appendChild(img);
+
+        } else if (file.type === 'application/pdf') {
+            const embed = document.createElement('embed');
+            embed.src = fileURL;
+            embed.type = 'application/pdf';
+            embed.classList.add('w-full', 'h-96', 'rounded-lg', 'shadow-md');
+            section.appendChild(embed);
+
+        } else if (file.type.startsWith('audio/')) {
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.src = fileURL;
+            audio.classList.add('w-full', 'mt-2');
+            section.appendChild(audio);
+
+        } else if (file.type.startsWith('video/')) {
+            const video = document.createElement('video');
+            video.controls = true;
+            video.src = fileURL;
+            video.classList.add('w-full', 'h-auto', 'rounded-lg', 'shadow-md', 'mt-2');
+            section.appendChild(video);
+
+        } else if (file.type.startsWith('text/') || file.name.endsWith('.txt') || file.name.endsWith('.csv') || file.name.endsWith('.log')) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const pre = document.createElement('pre');
+                pre.textContent = event.target.result;
+                pre.classList.add('bg-gray-800', 'p-4', 'rounded-lg', 'text-white', 'text-left', 'overflow-auto', 'max-h-60');
+                section.appendChild(pre);
+            };
+            reader.readAsText(file);
+
         } else {
-            return{ name: null, explorers: [] };
+            const msg = document.createElement('p');
+            msg.textContent = 'This file type cannot be previewed.';
+            msg.classList.add('text-gray-400', 'italic');
+            section.appendChild(msg);
         }
-    } catch (error) {
-        console.error('Error fetching chain info:', error);
-        return{ name: null, explorers: [] };
-    }
+
+        filePreview.appendChild(section);
+    });
 }
 
-async function displayChainResult(metadata) {
-    const chaininfo = await getChainInfo(metadata["0"])
-    const resultDiv = document.getElementById('chainResult');
-    if (chaininfo.name) {
-        resultDiv.innerHTML = `<h2>Chain Name: ${chaininfo.name}</h2>
-                               <h2>Chain ID: ${metadata["0"]}</h2>
-                               <h2>Contract Address: ${metadata["1"]}</h2>
-                               <h3>Explorers:</h3>
-                               <ul>${chaininfo.explorers.map(explorer => `<li><a href="${explorer.url}/address/${metadata["1"]}" target="_blank">${metadata["1"]}(${explorer.name})</a></li>`).join('')}</ul>
-                               <h2>Token ID: <a href ="${chaininfo.explorers[0].url}/nft/${metadata["1"]}/${metadata["2"]}">${metadata["2"]}</a></h2>`
-;
-    } else {
-        resultDiv.innerHTML = `<h2>Chain not found</h2>`;
-    }
-}
 
+// Expose functions to the global scope for HTML event handlers
+window.connectMetaMask = connectMetaMask;
+window.verify = verify;
+window.registernft = registernft;
+window.fetchOwnerWithNetworkCheck = fetchOwnerWithNetworkCheck; // Expose this function
+window.displayChainResult = displayChainResult;
+window.getChainInfo = getChainInfo;
+window.checkAndSwitchNetwork=checkAndSwitchNetwork;
+window.previewFile = previewFile;
+window.openChainListPopup = openChainListPopup;
