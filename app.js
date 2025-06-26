@@ -182,10 +182,46 @@ function addCustomField() {
     container.appendChild(fieldGroup);
 }
 
-document.getElementById('generateHashesButton').addEventListener('click', () => {
-    const file = document.getElementById('fileToUpload').files[0];
-    generateImageHashes(file);
+window.handleGenerateHashesClick = async function () {
+    const fileInput = document.getElementById('fileToUpload');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please select an image file first.");
+        return;
+    }
+
+    const button = document.getElementById('generateHashesButton');
+    button.disabled = true;
+    button.textContent = "✅ Hashes Generated";
+    button.classList.add('opacity-50', 'cursor-not-allowed');
+
+    await generateImageHashes(file);
+};
+
+document.getElementById('fileToUpload').addEventListener('change', () => {
+    const button = document.getElementById('generateHashesButton');
+    if (button) {
+        button.disabled = false;
+        button.textContent = "Generate Image Hashes";
+        button.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    // ❌ Remove previous hash output
+    const existing = document.getElementById('imageHashOutput');
+    if (existing) existing.remove();
+
+    // ✅ Reset other register-related input fields
+    document.getElementById('contractAddress').value = '';
+    document.getElementById('tokenId').value = '';
+    document.getElementById('chainID').value = '';
+
+    // ✅ Clear custom metadata fields
+    const customFields = document.getElementById('customFields');
+    if (customFields) customFields.innerHTML = '';
 });
+
+
 
 // Expose functions to the global scope for HTML event handlers
 window.connectMetaMask = connectMetaMask;

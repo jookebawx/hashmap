@@ -29,10 +29,10 @@
     </div>
     <div id="filePreview" class="mt-4 text-center"></div>
     <button id="generateHashesButton"
-                class="hidden mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg">
-                Generate Image Hashes
+        class="hidden mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg"
+        onclick="handleGenerateHashesClick()">
+        Generate Image Hashes
     </button>
-
 
     
 
@@ -71,7 +71,7 @@
             <div id="customMetadataSection" class="space-y-2">
             <label class="block text-gray-300">Custom Metadata (Optional):</label>
             <div id="customFields" class="space-y-2"></div>
-            <button type="button" onclick="addCustomField()"
+            <button type="button" id="addFieldBtn" onclick="addCustomField()"
                 class="mt-1 text-sm bg-blue-700 hover:bg-blue-800 text-white py-1 px-3 rounded-lg transition-all duration-300">
                 + Add Custom Field
             </button>
