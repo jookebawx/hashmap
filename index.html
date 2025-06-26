@@ -28,6 +28,14 @@
         <p class="text-lg font-semibold">Connected Wallet Address: <span id="address" class="text-yellow-300"></span></p>
     </div>
     <div id="filePreview" class="mt-4 text-center"></div>
+    <button id="generateHashesButton"
+                class="hidden mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg">
+                Generate Image Hashes
+    </button>
+
+
+    
+
     <!-- Upload Section -->
     <div id="upload" class="hidden max-w-lg mx-auto mt-6 p-6 bg-gray-800 rounded-lg shadow-md">
         <h1 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Upload File</h1>
@@ -41,7 +49,7 @@
         </form>
     </div>
     
-    <!-- Chain and OpenSea Results -->
+  
     <div id="chainResult" class="mt-4 text-center"></div>
     
     <!-- Register NFT Section -->
@@ -77,6 +85,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.14.4/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phash-js@0.3.0/dist/phash.min.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>

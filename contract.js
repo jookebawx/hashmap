@@ -52,6 +52,7 @@ async function verify() {
     }
 
     const groupHash = await computeGroupHash(files);
+    console.log(groupHash)
     window.contract = await loadContract(abipath, contractaddress);
     const account = await getCurrentAccount();
     try {
@@ -76,6 +77,8 @@ async function registernft() {
         alert('Please select one or more files to upload.');
         return;
     }
+    const groupHash = await computeGroupHash(files);
+    console.log(groupHash)
 
     const selected_chain_id = parseInt(document.getElementById('chainID').value);
     const register_CA = document.getElementById('contractAddress').value;
@@ -110,7 +113,7 @@ async function registernft() {
     window.contract = await loadContract(abipath, contractaddress);
 
     try {
-        const groupHash = await computeGroupHash(files);
+
         const isRegistered = await contract.methods.isContractRegistered(groupHash).call();
         if (isRegistered) {
             alert("This file or group of files has already been registered.");

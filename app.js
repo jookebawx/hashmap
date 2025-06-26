@@ -3,6 +3,7 @@ import { connectMetaMask, getCurrentAccount } from './wallet.js';
 import { verify, registernft, fetchOwnerWithNetworkCheck } from './contract.js';
 import { getChainInfo, checkAndSwitchNetwork } from './network.js';
 import { displayChainResult } from './render.js';
+import { generateImageHashes } from './imageHashing.js';
 
 async function openChainListPopup() {
     try {
@@ -65,22 +66,29 @@ async function openChainListPopup() {
     }
 }
 
+function wrapAndAppend(section, element) {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add(
+        'flex', 'justify-center', 'items-center', 'border', 'border-gray-700',
+        'rounded-lg', 'overflow-hidden', 'p-4', 'bg-gray-900'
+    );
+    wrapper.appendChild(element);
+    section.appendChild(wrapper);
+}
 
 function previewFile() {
     const fileInput = document.getElementById('fileToUpload');
     const files = fileInput.files;
     const filePreview = document.getElementById('filePreview');
+    const generateBtn = document.getElementById('generateHashesButton');
 
     filePreview.innerHTML = ''; // Clear previous preview
 
-    if (!files || files.length === 0) {
-        return;
-    }
-
+    if (!files || files.length === 0) return;
+    let showHashButton = false;
     Array.from(files).forEach(file => {
         const fileURL = URL.createObjectURL(file);
 
-        // Create a container for each file preview
         const section = document.createElement('div');
         section.classList.add('mb-6');
 
@@ -89,44 +97,48 @@ function previewFile() {
         label.classList.add('text-sm', 'mb-2', 'text-gray-300');
         section.appendChild(label);
 
+        let previewElement = null;
+
         if (file.type.startsWith('image/')) {
-            const img = document.createElement('img');
-            img.src = fileURL;
-            img.alt = "Image Preview";
-            img.classList.add('max-w-full', 'max-h-64', 'rounded-lg', 'shadow-md');
-            section.appendChild(img);
+            showHashButton = true;
+            previewElement = document.createElement('img');
+            previewElement.src = fileURL;
+            previewElement.alt = "Image Preview";
+            previewElement.classList.add('max-w-full', 'max-h-64', 'rounded-lg', 'shadow-md');
 
         } else if (file.type === 'application/pdf') {
-            const embed = document.createElement('embed');
-            embed.src = fileURL;
-            embed.type = 'application/pdf';
-            embed.classList.add('w-full', 'h-96', 'rounded-lg', 'shadow-md');
-            section.appendChild(embed);
+            previewElement = document.createElement('embed');
+            previewElement.src = fileURL;
+            previewElement.type = 'application/pdf';
+            previewElement.classList.add('w-full', 'h-96', 'rounded-lg', 'shadow-md');
 
         } else if (file.type.startsWith('audio/')) {
-            const audio = document.createElement('audio');
-            audio.controls = true;
-            audio.src = fileURL;
-            audio.classList.add('w-full', 'mt-2');
-            section.appendChild(audio);
+            previewElement = document.createElement('audio');
+            previewElement.controls = true;
+            previewElement.src = fileURL;
+            previewElement.classList.add('w-full', 'mt-2');
 
         } else if (file.type.startsWith('video/')) {
-            const video = document.createElement('video');
-            video.controls = true;
-            video.src = fileURL;
-            video.classList.add('w-full', 'h-auto', 'rounded-lg', 'shadow-md', 'mt-2');
-            section.appendChild(video);
+            previewElement = document.createElement('video');
+            previewElement.controls = true;
+            previewElement.src = fileURL;
+            previewElement.classList.add('w-full', 'h-auto', 'rounded-lg', 'shadow-md', 'mt-2');
 
         } else if (file.type.startsWith('text/') || file.name.endsWith('.txt') || file.name.endsWith('.csv') || file.name.endsWith('.log')) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                const pre = document.createElement('pre');
-                pre.textContent = event.target.result;
-                pre.classList.add('bg-gray-800', 'p-4', 'rounded-lg', 'text-white', 'text-left', 'overflow-auto', 'max-h-60');
-                section.appendChild(pre);
+                previewElement = document.createElement('pre');
+                previewElement.textContent = event.target.result;
+                previewElement.classList.add('bg-gray-800', 'p-4', 'rounded-lg', 'text-white', 'text-left', 'overflow-auto', 'max-h-60');
+                wrapAndAppend(section, previewElement);
+                filePreview.appendChild(section);
             };
             reader.readAsText(file);
+            return; // early return to wait for async read
+        }
 
+        if (previewElement) {
+            wrapAndAppend(section, previewElement);
         } else {
             const msg = document.createElement('p');
             msg.textContent = 'This file type cannot be previewed.';
@@ -136,7 +148,11 @@ function previewFile() {
 
         filePreview.appendChild(section);
     });
+    if (showHashButton) {
+        generateBtn.classList.remove('hidden');
+    }
 }
+
 function addCustomField() {
     const container = document.getElementById('customFields');
 
@@ -165,6 +181,12 @@ function addCustomField() {
 
     container.appendChild(fieldGroup);
 }
+
+document.getElementById('generateHashesButton').addEventListener('click', () => {
+    const file = document.getElementById('fileToUpload').files[0];
+    generateImageHashes(file);
+});
+
 // Expose functions to the global scope for HTML event handlers
 window.connectMetaMask = connectMetaMask;
 window.verify = verify;
@@ -176,3 +198,4 @@ window.checkAndSwitchNetwork=checkAndSwitchNetwork;
 window.previewFile = previewFile;
 window.openChainListPopup = openChainListPopup;
 window.addCustomField = addCustomField;
+window.generateImageHashes = generateImageHashes
