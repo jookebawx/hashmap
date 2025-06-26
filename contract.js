@@ -77,10 +77,17 @@ async function registernft() {
         return;
     }
 
-    const selected_chain_id = parseInt(document.getElementById('chainDropdown').value);
+    const selected_chain_id = parseInt(document.getElementById('chainID').value);
     const register_CA = document.getElementById('contractAddress').value;
     const register_tokenid = parseInt(document.getElementById('tokenId').value);
 
+     if (!selected_chain_id || !register_CA || !register_tokenid) {
+        alert('Please fill out all required fields: Chain ID, Contract Address, and Token ID.');
+        [selected_chain_id, register_CA, register_tokenid].forEach(input => {
+            if (!input.value) input.classList.add('border-red-500');
+        });
+        return;
+    }
     const account = await getCurrentAccount();
     window.contract = await loadContract(abipath, contractaddress);
 

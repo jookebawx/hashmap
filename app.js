@@ -139,6 +139,7 @@ function previewFile() {
 }
 
 
+
 // Expose functions to the global scope for HTML event handlers
 window.connectMetaMask = connectMetaMask;
 window.verify = verify;
@@ -149,3 +150,4 @@ window.getChainInfo = getChainInfo;
 window.checkAndSwitchNetwork=checkAndSwitchNetwork;
 window.previewFile = previewFile;
 window.openChainListPopup = openChainListPopup;
+window.addCustomField = addCustomField;
