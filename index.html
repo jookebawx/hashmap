@@ -49,8 +49,11 @@
         <h1 class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">Register your NFT</h1>
         <form id="RegisterNFT" class="space-y-4">
             <label for="chainDropdown" class="block text-gray-300">Blockchain Network:</label>
-            <select id="chainDropdown" class="block w-full p-2 border rounded-lg bg-gray-700 text-white"></select>
-            
+            <input type="text" id="chainID" name="chainID" required class="block w-full p-2 border rounded-lg bg-gray-700 text-white">
+             <button type="button" onclick="openChainListPopup()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300">
+            View Supported Chains
+            </button>
             <label for="contractAddress" class="block text-gray-300">Contract Address:</label>
             <input type="text" id="contractAddress" name="contractAddress" required class="block w-full p-2 border rounded-lg bg-gray-700 text-white">
             

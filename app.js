@@ -4,23 +4,67 @@ import { verify, registernft, fetchOwnerWithNetworkCheck } from './contract.js';
 import { getChainInfo, checkAndSwitchNetwork } from './network.js';
 import { displayChainResult } from './render.js';
 
-// Populate the chain dropdown
-async function populateDropdown() {
+async function openChainListPopup() {
     try {
         const response = await fetch('https://chainid.network/chains.json');
-        const data = await response.json();
-        const dropdown = document.getElementById('chainDropdown');
-        dropdown.innerHTML = '';
-        data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.chainId;
-            option.textContent = item.name;
-            dropdown.appendChild(option);
-        });
+        const chains = await response.json();
+
+        const popup = window.open('', 'ChainList', 'width=600,height=600');
+
+        popup.document.write(`
+            <html>
+                <head>
+                    <title>Chain ID Reference</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 20px; background-color: #111; color: #eee; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+                        th, td { padding: 8px 12px; border-bottom: 1px solid #555; text-align: left; }
+                        th { background-color: #222; }
+                        button { padding: 4px 8px; background-color: #4f46e5; color: white; border: none; border-radius: 4px; cursor: pointer; }
+                        button:hover { background-color: #4338ca; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Supported Blockchain Networks</h2>
+                    <table>
+                        <tr><th>Chain ID</th><th>Network Name</th><th>Short Name</th><th>Select</th></tr>
+                        ${chains.map(chain => `
+                            <tr>
+                                <td>${chain.chainId}</td>
+                                <td>${chain.name}</td>
+                                <td>${chain.shortName || '-'}</td>
+                                <td>
+                                    <button onclick="selectChain(${chain.chainId})">Select</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </table>
+
+                    <script>
+                        function selectChain(chainId) {
+                            if (window.opener && !window.opener.closed) {
+                                const input = window.opener.document.getElementById('chainID');
+                                if (input) {
+                                    input.value = chainId;
+                                    window.close();
+                                } else {
+                                    alert('Chain ID input field not found in the main window.');
+                                }
+                            } else {
+                                alert('Main window is not accessible.');
+                            }
+                        }
+                    </script>
+                </body>
+            </html>
+        `);
+        popup.document.close();
     } catch (error) {
-        console.error('Error fetching or parsing JSON:', error);
+        alert('Failed to fetch chain list. Please try again later.');
+        console.error(error);
     }
 }
+
 
 function previewFile() {
     const fileInput = document.getElementById('fileToUpload');
@@ -95,8 +139,6 @@ function previewFile() {
 }
 
 
-populateDropdown();
-
 // Expose functions to the global scope for HTML event handlers
 window.connectMetaMask = connectMetaMask;
 window.verify = verify;
@@ -106,3 +148,4 @@ window.displayChainResult = displayChainResult;
 window.getChainInfo = getChainInfo;
 window.checkAndSwitchNetwork=checkAndSwitchNetwork;
 window.previewFile = previewFile;
+window.openChainListPopup = openChainListPopup;
