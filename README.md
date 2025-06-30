@@ -101,10 +101,6 @@ We welcome contributions! To contribute:
 
 For detailed contribution guidelines, refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
 For questions or feedback, please open an issue on [GitHub](https://github.com/your-repo/hashmap/issues).
