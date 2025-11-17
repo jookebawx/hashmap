@@ -39,7 +39,7 @@ function renderOwnerButton(metadata) {
     `;
 }
 
-function renderOwnerInfo({ owner, chaininfo, metadataUrl, tokenURI }) {
+function renderOwnerInfo({ owner, chaininfo, metadataUrl, tokenURI, metadata }) {
     return `
         <div class="max-w-lg mx-auto p-6 bg-gray-800 rounded-lg shadow-md mt-6 text-white">
             ${renderSection('Owner Address', owner, 'blue-400')}
